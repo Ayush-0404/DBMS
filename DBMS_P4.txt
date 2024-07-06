@@ -1,0 +1,92 @@
+DBMS 
+PART-4
+
+Queries-
+-- Retrieve customer information along with their orders
+SELECT Customer.Customer_id, Customer.Name, Customer.Address, Orders.ORDER_ID, Orders.ORDER_DATE
+FROM Customer
+JOIN Orders ON Customer.Customer_id = Orders.CUSTOMER_IDS;
+
+
+-- Calculate the total quantity of a specific product in the inventory
+SELECT PRODUCT_NAME, SUM(QUANTITY) AS TotalQuantity
+FROM INVENTORY
+JOIN PRODUCT ON INVENTORY.PRODUCT_IDS = PRODUCT.PRODUCT_ID
+WHERE PRODUCT_NAME = 'Saree'
+GROUP BY PRODUCT_NAME;
+
+
+-- Insert a new product into the inventory with constraints
+INSERT INTO PRODUCT (PRODUCT_NAME, PRODUCT_QUANTITY, CATEGORY_NAME, PRODUCT_DISC)
+VALUES ('Headphones', 50, 'Electronics', 15);
+
+
+-- Combine results from two categories into one result set
+SELECT PRODUCT_NAME, CATEGORY_NAME
+FROM PRODUCT
+WHERE CATEGORY_NAME = 'Clothing'
+UNION
+SELECT PRODUCT_NAME, CATEGORY_NAME
+FROM PRODUCT
+WHERE CATEGORY_NAME = 'Electronics';
+
+
+-- Find products in Clothing category but not in Electronics category
+SELECT PRODUCT_NAME, CATEGORY_NAME
+FROM PRODUCT
+WHERE CATEGORY_NAME = 'Clothing'
+EXCEPT
+SELECT PRODUCT_NAME, CATEGORY_NAME
+FROM PRODUCT
+WHERE CATEGORY_NAME = 'Electronics';
+
+
+
+-- Find customers who have placed orders for products in a specific category
+SELECT DISTINCT Customer.Customer_id, Customer.Name
+FROM Customer
+JOIN Orders ON Customer.Customer_id = Orders.CUSTOMER_IDS
+WHERE Orders.PRODUCT_IDS IN (SELECT PRODUCT_ID FROM PRODUCT WHERE CATEGORY_NAME = 'Groceries');
+
+
+-- Update the product quantity based on the total orders placed for that product
+UPDATE PRODUCT
+SET PRODUCT_QUANTITY = PRODUCT_QUANTITY - (
+    SELECT COUNT(*)
+    FROM ORDERS
+    WHERE ORDERS.PRODUCT_IDS = PRODUCT.PRODUCT_ID
+)
+WHERE PRODUCT_QUANTITY > 0;
+
+
+-- Insert a new order for a customer who has placed the most orders
+INSERT INTO ORDERS (PRODUCT_IDS, CUSTOMER_IDS, ORDER_DATE, VENDOR_ID, ORDER_STATUS)
+VALUES (
+    (SELECT PRODUCT_ID FROM PRODUCT ORDER BY PRODUCT_QUANTITY DESC LIMIT 1),
+    (SELECT Customer_id FROM Customer ORDER BY (SELECT COUNT(*) FROM ORDERS WHERE CUSTOMER_IDS = Customer.Customer_id) DESC LIMIT 1),
+    '2024-02-15', 104, 'Processing'
+);
+
+
+-- Retrieve products that are either in high demand or have a high discount
+SELECT PRODUCT_NAME, PRODUCT_QUANTITY, PRODUCT_DISC
+FROM PRODUCT
+WHERE PRODUCT_QUANTITY > 50
+UNION
+SELECT PRODUCT_NAME, PRODUCT_QUANTITY, PRODUCT_DISC
+FROM PRODUCT
+WHERE PRODUCT_DISC > 15;
+
+
+
+-- Find customers who have not placed any orders 
+SELECT Customer.Customer_id, Customer.Name
+FROM Customer
+LEFT JOIN Orders ON Customer.Customer_id = Orders.CUSTOMER_IDS
+WHERE Orders.ORDER_ID IS NULL;
+
+Contributions:
+Aryan Bansal
+Ayush Kumar
+Dhruv verma 
+Digvijay Singh

@@ -1,0 +1,196 @@
+﻿DBMS
+part-III
+
+
+
+
+
+
+DATABASE TABLE CODE:-
+
+
+CREATE DATABASE IF NOT EXISTS RetailStore;
+USE RetailStore;
+
+
+
+
+create table Website(
+        URL varchar(100) primary key,
+        Name Varchar(50) NOT NULL
+        );
+    
+INSERT INTO Website (URL, Name)
+VALUES 
+    ('www.ICS1.com', 'Indian Clothing Store'),
+    ('www.SB2.com', 'Spices Bazaar'),
+    ('www.EH3.com', 'Electronics Hub');
+
+
+CREATE TABLE Customer (
+    Customer_id INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(50),
+    Address VARCHAR(100),
+    Phone_no INT NOT NULL,
+    Order_ID INT,
+    FOREIGN KEY (Order_ID) REFERENCES ORDERS (ORDER_ID) ON UPDATE CASCADE
+);
+INSERT INTO Customer (Name, Address, Phone_no, Order_ID)
+VALUES
+    ('Raj Kumar', '123 Main Street, Delhi', 9876543210, 101),
+    ('Pooja Sharma', '456 MG Road, Mumbai', 8765432109, 102),
+    ('Amit Patel', '789 Park Street, Kolkata', 7654321098, 103);
+
+
+
+
+CREATE TABLE PRODUCT(
+PRODUCT_ID INT PRIMARY KEY,
+PRODUCT_NAME VARCHAR(20) NOT NULL,
+PRODUCT_QUANTITY INT DEFAULT 0,
+DESCRIPTION VARCHAR(50),
+RATING INT DEFAULT NULL,
+CATEGORY_ID INT NOT NULL,
+DISCOUNT INT
+);
+INSERT INTO PRODUCT (PRODUCT_NAME, PRODUCT_QUANTITY, DESCRIPTION, RATING, CATEGORY_ID, DISCOUNT)
+VALUES
+    ('Saree', 100, 'Traditional Indian clothing', 4, 'Clothing', 10),
+    ('Spices Combo', 50, 'Assorted Indian spices', 5, 'Groceries', 15),
+    ('Smartphone', 30, 'Latest Android phone', 4, 'Electronics', 8);
+
+
+CREATE TABLE ORDERS (
+    ORDER_ID INT PRIMARY KEY,
+    PRODUCT_IDS INT,
+    FOREIGN KEY (PRODUCT_IDS) REFERENCES PRODUCT (PRODUCT_ID) ON UPDATE CASCADE,
+    CUSTOMER_IDS INT,
+    FOREIGN KEY (CUSTOMER_IDS) REFERENCES Customer (Customer_id) ON UPDATE CASCADE,
+    ORDER_DATE DATE,
+    VENDOR_ID INT,
+    FOREIGN KEY (VENDOR_ID) REFERENCES VENDOR (VENDOR_ID) ON UPDATE CASCADE,
+    ORDER_STATUS VARCHAR(10) NOT NULL
+);
+INSERT INTO ORDERS (PRODUCT_IDS, CUSTOMER_IDS, ORDER_DATE, VENDOR_ID, ORDER_STATUS)
+VALUES
+    (1, 1, '2024-02-12', 101, 'Processing'),
+    (2, 2, '2024-02-13', 102, 'Shipped'),
+    (3, 3, '2024-02-14', 103, 'Delivered');
+
+
+CREATE TABLE VENDOR(
+
+
+        VENDOR_ID INT primary key NOT NULL,
+        VENDOR_NAME VARCHAR(20),
+        VENDOR_CONTACT INT NOT NULL
+);
+INSERT INTO VENDOR (VENDOR_NAME, VENDOR_CONTACT)
+VALUES
+    ('Saree Emporium', 9876543210),
+    ('Spice Traders', 8765432109),
+    ('Tech Solutions', 7654321098);
+CREATE TABLE INVENTORY(
+        INVENTORY_NO INT PRIMARY KEY NOT NULL,
+        VENDOR_IDS INT NOT NULL,
+        FOREIGN KEY(VENDOR_IDS) REFERENCES VENDOR(VENDOR_ID) ON UPDATE CASCADE,
+        PRODUCT_IDS INT NOT NULL,
+        FOREIGN KEY(PRODUCT_IDS) REFERENCES PRODUCT(PRODUCT_ID) ON UPDATE CASCADE,
+        QUANTITY INT DEFAULT 0
+);
+INSERT INTO INVENTORY (VENDOR_IDS, PRODUCT_IDS, QUANTITY)
+VALUES
+    (1, 1, 50),
+    (2, 2, 30),
+    (3, 3, 20);
+
+
+CREATE TABLE CATEGORY (
+    CATEGORY_NAME VARCHAR(10) PRIMARY KEY NOT NULL,
+    CATEGORY_DISC DOUBLE DEFAULT 0,
+        CONSTRAINT `Category_check` CHECK ((`category_disc` >= 0 AND `category_discount` < 100))
+
+
+);
+INSERT INTO CATEGORY (CATEGORY_NAME, CATEGORY_DISC)
+VALUES
+    ('Clothing', 5),
+    ('Groceries', 8),
+    ('Electronics', 10);
+
+
+CREATE TABLE Del_agent (
+    Agent_id INT PRIMARY KEY NOT NULL,
+    Agent_Name VARCHAR(50) NOT NULL,
+    Vehicle_info VARCHAR(100),
+    Phone_no INT NOT NULL,
+    Order_ID INT,
+    FOREIGN KEY (Order_ID) REFERENCES ORDERS (ORDER_ID) ON UPDATE CASCADE,
+    PICKUP_ADDRESS VARCHAR(100) NOT NULL,
+    DELIVERY_ADDRESS VARCHAR(100) NOT NULL
+);
+
+
+INSERT INTO Del_agent (Agent_Name, Vehicle_info, Phone_no, Order_ID, PICKUP_ADDRESS, DELIVERY_ADDRESS)
+VALUES
+    ('Ajay Kumar', 'Motorcycle', 9876543210, 101, 'Pickup Point A', 'Delivery Location X'),
+    ('Shikha Verma', 'Van', 8765432109, 102, 'Pickup Point B', 'Delivery Location Y'),
+    ('Vivek Singh', 'Bicycle', 7654321098, 103, 'Pickup Point C', 'Delivery Location Z');
+
+
+CREATE TABLE Tracking (
+    Tracking_id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    Agent_ID VARCHAR(50),
+    Order_ID INT,
+    FOREIGN KEY (Order_ID) REFERENCES ORDERS (ORDER_ID) ON UPDATE CASCADE,
+        FOREIGN KEY (Agent_ID) REFERENCES Del_agent (Agent_ID) ON UPDATE CASCADE
+);
+
+
+INSERT INTO Tracking (Agent_ID, Order_ID)
+VALUES
+    ('Ajay Kumar', 101),
+    ('Shikha Verma', 102),
+    ('Vivek Singh', 103);
+    
+CREATE TABLE Admin(
+        Admin_ID INT PRIMARY KEY,
+    Password VARCHAR(50)
+);
+INSERT INTO Admin (Admin_ID, Password)
+VALUES
+    (1, 'admin123'),
+    (2, 'secureadmin');
+
+
+CREATE TABLE WAREHOUSE (
+    Manager INT PRIMARY KEY NOT NULL,
+    INVENTORY_NO INT,
+        FOREIGN KEY (INVENTORY_NO) REFERENCES INVENTORY (INVENTORY_NO) ON UPDATE CASCADE,
+    Address VARCHAR(50),
+    Pincode INT NOT NULL
+);
+INSERT INTO WAREHOUSE (Manager, INVENTORY_NO, Address, Pincode)
+VALUES
+    (101, 1, 'Central Warehouse, Delhi', 110001),
+    (102, 2, 'Mumbai Storage Center', 400001),
+    (103, 3, 'Kolkata Distribution Hub', 700001);
+
+
+
+
+Optimizations done in the code:-
+Modifications and improvements made:
+
+
+* CREATEd DATABASE only IF NOT EXISTS RetailStore was added to make sure the database is only created in the event that it doesn't already exist.
+* Where appropriate, NOT NULL constraints have been added to columns to guarantee that crucial data is always supplied.
+* For ORDER_DATE in the ORDERS table, the data type specified is DATE.
+* used the appropriate foreign key reference (FOREIGN KEY (Order_ID) REFERENCES ORDERS (ORDER_ID)) in the ORDERS table.
+* To refer to the CATEGORY_NAME in the CATEGORY table, the CATEGORY_ID in the PRODUCT table was modified.
+* made ORDER_STATUS a particular data type and marked it as non-NULL in the ORDERS table.
+Contributors:-
+Ayush Kumar 2022125
+Aryan bansal
+Dhruv Kumar
+Digvijay
