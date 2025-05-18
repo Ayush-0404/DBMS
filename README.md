@@ -75,7 +75,6 @@ DBMS/
 
 # Integration issue
 ```
-_Adapt this to match your actual structure!_
 
 ## License
 This project is currently unlicensed.
